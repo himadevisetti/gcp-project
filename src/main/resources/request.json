@@ -1,0 +1,12 @@
+{
+   "event":{
+      "bucket":"some-bucket",
+      "metageneration":"1",
+      "name":"some-file.txt",
+      "timeCreated":"1591207497",
+      "updated":"1591207497"
+   },
+   "context":{
+      "eventType":"google.storage.object.finalize"
+   }
+}
