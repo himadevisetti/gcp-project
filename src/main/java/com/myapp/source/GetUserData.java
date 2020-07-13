@@ -14,6 +14,7 @@ import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.myapp.pojos.AudioMetadata;
 import com.myapp.pojos.UserData;
 
 public class GetUserData {
@@ -29,10 +30,10 @@ public class GetUserData {
 		Firestore db = FirestoreOptions.getDefaultInstance().getService();
 
 		// Create a reference to the userdata collection
-		CollectionReference cities = db.collection("userdata");
+		CollectionReference user = db.collection("userdata");
 		
 		// Create a query against the collection.
-		Query query = cities.whereEqualTo("bucket_name", bucketName).whereEqualTo("file_name", fileName);
+		Query query = user.whereEqualTo("bucket_name", bucketName).whereEqualTo("file_name", fileName);
 
 		// retrieve query results asynchronously using query.get()
 		ApiFuture<QuerySnapshot> querySnapshot = query.get();
@@ -53,21 +54,31 @@ public class GetUserData {
 	public static void main(String args[]) throws Exception {
 
 		GetUserData ud = new GetUserData();
-		UserData user = ud.queryUserData("exotic_place", "audio.raw");
+		UserData user = ud.queryUserData("exotic_place", "commercial_mono.wav");
 		System.out.println(user);
 		
-		Map<String, String> attrMap = new Gson().fromJson(new Gson().toJson(user), 
+		Gson gson = new Gson();
+		
+		Map<String, String> attrMap = gson.fromJson(gson.toJson(user), 
 	            new TypeToken<HashMap<String, String>>() {}.getType()
 	    );
 		
 		System.out.println("\nPrinting Attributes: ");
 		for (Map.Entry<String, String> entry : attrMap.entrySet()) {
-			System.out.println(entry.getKey() + ":" + entry.getValue());
+			if (entry.getKey().equals("metadata")) {
+				String metadata = entry.getValue(); 
+				AudioMetadata audioMetadata = gson.fromJson(metadata, AudioMetadata.class); 
+				System.out.println("Duration(seconds): " + audioMetadata.getDuration());
+				System.out.println("SampleRate: " + audioMetadata.getSampleRate());
+				System.out.println("Format: " + audioMetadata.getFormat().toUpperCase());
+			} else {
+				System.out.println(entry.getKey() + ":" + entry.getValue());
+			}			
 		}
-		System.out.println("Source Language: " + attrMap.get("source_language"));
-		System.out.println("Target Language: " + attrMap.get("target_language"));
-		System.out.println("File Name: " + attrMap.get("file_name"));
-		System.out.println("Created Date: " + attrMap.get("created"));
+//		System.out.println("Source Language: " + attrMap.get("source_language"));
+//		System.out.println("Target Language: " + attrMap.get("target_language"));
+//		System.out.println("File Name: " + attrMap.get("file_name"));
+//		System.out.println("Created Date: " + attrMap.get("created"));
 
 	}
 

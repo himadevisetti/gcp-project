@@ -12,6 +12,7 @@ public class UserData {
 	private String file_name;
 	private String public_url;	
 	private Date created; 
+	private String metadata; 
 	
 	public String getDocument_id() {
 		return document_id;
@@ -77,6 +78,14 @@ public class UserData {
 		this.created = created;
 	}
 
+	public String getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(String metadata) {
+		this.metadata = metadata;
+	}
+
 	@Override
     public String toString() {
         return "document_id=" + document_id + ","
@@ -86,7 +95,8 @@ public class UserData {
                + "bucket_name=" + bucket_name + "," 
                + "file_name=" + file_name + ","
                + "public_url=" + public_url + ","
-               + "created_time=" + created.toString();
+               + "created_time=" + created.toString() + ","
+               + "metadata=" + metadata; 
 
     }
 
