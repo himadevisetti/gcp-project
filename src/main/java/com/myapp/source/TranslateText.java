@@ -20,6 +20,7 @@ import com.myapp.pojos.PubSubMessage;
 public class TranslateText implements BackgroundFunction<PubSubMessage> {
 
 	private static final Logger logger = Logger.getLogger(TranslateText.class.getName());
+	final static String GOOGLE_CLOUD_PROJECT = System.getenv("GOOGLE_CLOUD_PROJECT");
 
 	@Override
 	public void accept(PubSubMessage message, Context context) {
@@ -34,23 +35,22 @@ public class TranslateText implements BackgroundFunction<PubSubMessage> {
 					StandardCharsets.UTF_8);
 			logger.info(messageString);
 
-			String projectId = "teak-mantis-279104";
 			// Supported Languages: https://cloud.google.com/translate/docs/languages
 			Map<String, String> attrMap = message.getAttributes();
-			String targetLanguage = attrMap.get("target_language"); 
+			String targetLanguage = attrMap.get("target_language");
 
-			String translatedText = translateText(projectId, targetLanguage, messageString);
+			String translatedText = translateText(GOOGLE_CLOUD_PROJECT, targetLanguage, messageString);
 			logger.info("Translated Text: " + translatedText);
 			String topicId = "filewriter";
 			List<String> messages = new ArrayList<String>();
 			// publish translated text and attributes passed by the user
-			messages.add(translatedText); 
-			PublishMessages publish = new PublishMessages(); 
-			List<String> messageIds = publish.publishMessages(projectId, topicId, messages, attrMap);
+			messages.add(translatedText);
+			PublishMessages publish = new PublishMessages();
+			List<String> messageIds = publish.publishMessages(GOOGLE_CLOUD_PROJECT, topicId, messages, attrMap);
 			for (String messageId : messageIds) {
 				logger.info("Published with message ID: " + messageId);
 			}
-			
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -62,8 +62,10 @@ public class TranslateText implements BackgroundFunction<PubSubMessage> {
 	public String translateText(String projectId, String targetLanguage, String text) throws IOException {
 
 		// Initialize client that will be used to send requests. This client only needs
-		// to be created once, and can be reused for multiple requests. After completing all of your
-		// requests, call the "close" method on the client to safely clean up any remaining background
+		// to be created once, and can be reused for multiple requests. After completing
+		// all of your
+		// requests, call the "close" method on the client to safely clean up any
+		// remaining background
 		// resources.
 		try (TranslationServiceClient client = TranslationServiceClient.create()) {
 			// Supported Locations: `global`, [glossary location], or [model location]
@@ -78,12 +80,12 @@ public class TranslateText implements BackgroundFunction<PubSubMessage> {
 
 			TranslateTextResponse response = client.translateText(request);
 
-			StringBuffer sb = new StringBuffer(); 
+			StringBuffer sb = new StringBuffer();
 			// Display the translation for each input text provided
 			for (Translation translation : response.getTranslationsList()) {
-				sb.append(translation.getTranslatedText()); 
+				sb.append(translation.getTranslatedText());
 			}
-			return sb.toString(); 
+			return sb.toString();
 		}
 	}
 

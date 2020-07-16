@@ -23,7 +23,7 @@
 			<dependency>
 				<groupId>com.google.cloud</groupId>
 				<artifactId>libraries-bom</artifactId>
-				<version>5.4.0</version>
+				<version>8.0.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -37,13 +37,19 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- <dependency> <groupId>com.google.cloud</groupId> <artifactId>google-cloud</artifactId> 
-			<version>0.8.0</version> </dependency> -->
 		<dependency>
 			<groupId>com.google.cloud.functions</groupId>
 			<artifactId>functions-framework-api</artifactId>
 			<version>1.0.1</version>
-			<scope>provided</scope>
+			<!-- <scope>provided</scope> -->
+		</dependency>
+		<dependency>
+			<groupId>com.google.api</groupId>
+			<artifactId>gax</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.api</groupId>
+			<artifactId>gax-grpc</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.google.cloud</groupId>
@@ -68,6 +74,10 @@
 		<dependency>
 			<groupId>com.google.cloud</groupId>
 			<artifactId>google-cloud-firestore</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-nio</artifactId>
 		</dependency>
 
 		<!-- The following dependencies are only required for testing -->
