@@ -46,7 +46,7 @@
 		<dependency>
 			<groupId>com.google.api</groupId>
 			<artifactId>gax</artifactId>
-		</dependency>
+		</dependency><!--$NO-MVN-MAN-VER$-->
 		<dependency>
 			<groupId>com.google.api</groupId>
 			<artifactId>gax-grpc</artifactId>

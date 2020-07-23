@@ -48,6 +48,7 @@ public class ConvertTextToSpeech implements BackgroundFunction<PubSubMessage> {
 
 		String targetLanguage = attrMap.get("target_language");
 		String fileName = attrMap.get("file_name");
+		String bucket = attrMap.get("bucket_name");
 
 		// Instantiates a client
 		try (TextToSpeechClient textToSpeechClient = TextToSpeechClient.create()) {
@@ -73,17 +74,35 @@ public class ConvertTextToSpeech implements BackgroundFunction<PubSubMessage> {
 			String objName = "Translated_" + fileNameNoExt + ".mp3";
 
 			byte[] content = audioContents.toByteArray();
-			writeToGcs(GCLOUD_STORAGE_OUTPUT_BUCKET, objName, content);
+			Storage storage = CommonUtils.getStorageClient();
+			uploadTranslatedFileToDestBucket(storage, GCLOUD_STORAGE_OUTPUT_BUCKET, objName, content);
+			deleteOriginalFileFromSourceBucket(storage, bucket, fileName);
 		}
 	}
 
-	public void writeToGcs(String bucketName, String objectName, byte[] content) throws Exception {
-		Storage storage = CommonUtils.getStorageClient();
-		Bucket bucket = storage.get(bucketName);
-		bucket.create(objectName, content);
-		BlobId blobId = BlobId.of(bucketName, objectName);
-		storage.createAcl(blobId, Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
-		logger.info("Uploaded to bucket " + bucketName + " as " + objectName);
+	public void uploadTranslatedFileToDestBucket(Storage storage, String bucketName, String objectName, byte[] content) {
+		
+		try {
+			Bucket bucket = storage.get(bucketName);
+			bucket.create(objectName, content);
+			BlobId blobId = BlobId.of(bucketName, objectName);
+			storage.createAcl(blobId, Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
+			logger.info("Uploaded to bucket " + bucketName + " as " + objectName);
+		} catch (Exception ex) {
+			logger.info("Couldn't upload the object " + objectName + " to bucket " + bucketName + " due to: " + ex.getMessage());
+		}
+		
 	}
+	
+	public void deleteOriginalFileFromSourceBucket(Storage storage, String bucketName, String objectName) {
+		
+		try {
+			storage.delete(bucketName, objectName);
+		    logger.info("Object " + objectName + " was deleted from " + bucketName);
+		} catch (Exception ex) {
+			logger.info("Couldn't delete the object due to: " + ex.getMessage()); 
+		}
+	    
+	  }
 
 }
