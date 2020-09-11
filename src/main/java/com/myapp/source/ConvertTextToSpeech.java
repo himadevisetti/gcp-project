@@ -152,7 +152,8 @@ public class ConvertTextToSpeech implements BackgroundFunction<PubSubMessage> {
 			}
 
 			String fileNameNoExt = Files.getNameWithoutExtension(fileName);
-			String objName = "Translated_" + fileNameNoExt + ".mp3";
+//			String objName = "Translated_" + fileNameNoExt + ".mp3";
+			String objName = fileNameNoExt + ".mp3";
 
 			byte[] content = audioContents.toByteArray();
 			Storage storage = CommonUtils.getStorageClient();
