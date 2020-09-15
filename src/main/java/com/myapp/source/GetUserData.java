@@ -1,13 +1,18 @@
 package com.myapp.source;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import com.google.api.core.ApiFuture;
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.FirestoreOptions;
 import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
@@ -21,11 +26,11 @@ public class GetUserData {
 	private static final Logger logger = Logger.getLogger(GetUserData.class.getName());
 
 	/**
-	 * Queries firestore collection userdata using file_name
+	 * Queries firestore collection userdata using user_name and file_name
 	 *
 	 * @return UserData
 	 */
-	public UserData queryUserData(String bucketName, String fileName) throws Exception {
+	public UserData queryUserData(String userName, String bucketName, String fileName) throws Exception {
 
 		Firestore db = CommonUtils.getFirestoreClient();
 
@@ -33,7 +38,7 @@ public class GetUserData {
 		CollectionReference user = db.collection("userdata");
 
 		// Create a query against the collection.
-		Query query = user.whereEqualTo("bucket_name", bucketName).whereEqualTo("file_name", fileName);
+		Query query = user.whereEqualTo("user_name", userName).whereEqualTo("file_name", fileName);
 
 		// retrieve query results asynchronously using query.get()
 		ApiFuture<QuerySnapshot> querySnapshot = query.get();
@@ -54,7 +59,7 @@ public class GetUserData {
 	public static void main(String args[]) throws Exception {
 
 		GetUserData ud = new GetUserData();
-		UserData user = ud.queryUserData("exotic_place", "commercial_mono.wav");
+		UserData user = ud.queryUserData("mytestuser@mail.com", "exotic_place", "EditedAudio.flac");
 		System.out.println(user);
 
 		Gson gson = new Gson();
